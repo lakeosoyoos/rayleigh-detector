@@ -274,7 +274,7 @@ def detect_resolution(filepaths):
 
 
 def render_pdf(html_content, pdf_path):
-    """Render HTML to PDF. Try Chrome first, fall back to WeasyPrint."""
+    """Render HTML to PDF. Try Chrome first, fall back to xhtml2pdf."""
     # Try Chrome headless first (best quality)
     chrome = _find_chrome()
     if chrome:
@@ -296,11 +296,12 @@ def render_pdf(html_content, pdf_path):
         except Exception:
             pass
 
-    # Fall back to WeasyPrint (works on servers without Chrome)
+    # Fall back to xhtml2pdf (pure Python, no system deps)
     try:
-        from weasyprint import HTML
-        HTML(string=html_content).write_pdf(pdf_path)
-        return os.path.exists(pdf_path)
+        from xhtml2pdf import pisa
+        with open(pdf_path, 'wb') as f:
+            result = pisa.CreatePDF(html_content, dest=f)
+        return not result.err and os.path.exists(pdf_path)
     except ImportError:
         return False
     except Exception:
