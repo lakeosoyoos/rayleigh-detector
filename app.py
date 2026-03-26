@@ -110,6 +110,31 @@ st.title("Rayleigh Duplicate Detector")
 st.caption("OTDR trace duplicate detection using Rayleigh backscatter fingerprinting")
 
 
+# ── Password protection ──────────────────────────────────────────────────────
+
+def check_password():
+    """Return True if user entered the correct password."""
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+    if st.session_state.authenticated:
+        return True
+    try:
+        correct = st.secrets["passwords"]["app_password"]
+    except (KeyError, FileNotFoundError):
+        return True  # No password configured — allow access
+    pwd = st.text_input("Enter password", type="password", key="pwd_input")
+    if pwd:
+        if pwd == correct:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Incorrect password")
+    return False
+
+if not check_password():
+    st.stop()
+
+
 # ── Session state init ───────────────────────────────────────────────────────
 
 for key in ["pdf_bytes", "pdf_name", "html_report", "html_name",
