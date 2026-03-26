@@ -161,15 +161,25 @@ with st.sidebar:
 
     input_method = st.radio(
         "Input method",
-        ["Browse files", "Folder path"],
+        ["Upload ZIP", "Browse files", "Folder path"],
         index=0,
         horizontal=True,
     )
 
     uploaded_files = None
+    uploaded_zip = None
     folder_path = None
 
-    if input_method == "Browse files":
+    if input_method == "Upload ZIP":
+        uploaded_zip = st.file_uploader(
+            "Drop a ZIP of SOR files here",
+            type=["zip"],
+            accept_multiple_files=False,
+            key=f"zip_upload_{st.session_state.upload_key}",
+        )
+        if uploaded_zip:
+            st.caption(f"ZIP: {uploaded_zip.name} ({uploaded_zip.size / 1024:.0f} KB)")
+    elif input_method == "Browse files":
         uploaded_files = st.file_uploader(
             "Drop SOR files here",
             type=["sor"],
@@ -183,17 +193,17 @@ with st.sidebar:
             placeholder="/Users/you/Desktop/My Traces/",
         )
         if folder_path:
-            # Clean up path — dragging from Finder can add trailing spaces or quotes
             folder_path = folder_path.strip().strip("'\"")
             st.session_state.folder_path = folder_path
         if folder_path and os.path.isdir(folder_path):
             from rayleigh_fingerprint import collect_sor_files as _collect
             _found = _collect([folder_path])
-            st.caption(f"✅ Found {len(_found)} .sor files")
+            st.caption(f"Found {len(_found)} .sor files")
         elif folder_path:
             st.warning("Folder not found")
 
-    has_input = bool(uploaded_files) or (folder_path and os.path.isdir(folder_path))
+    has_input = (bool(uploaded_files) or bool(uploaded_zip) or
+                 (folder_path and os.path.isdir(folder_path)))
 
     if st.button("Clear All", use_container_width=True):
         old_key = st.session_state.upload_key
@@ -230,6 +240,25 @@ def stage_files(uploaded, prefix="sor_"):
         with open(fp, 'wb') as f:
             f.write(uf.getbuffer())
         paths.append(fp)
+    return sorted(paths), tmpdir
+
+
+def stage_zip(uploaded_zip, prefix="sor_zip_"):
+    """Extract SOR files from a ZIP to a temp directory. Return list of paths."""
+    import zipfile
+    tmpdir = tempfile.mkdtemp(prefix=prefix)
+    paths = []
+    with zipfile.ZipFile(io.BytesIO(uploaded_zip.getbuffer()), 'r') as zf:
+        for name in zf.namelist():
+            if name.lower().endswith('.sor') and not name.startswith('__MACOSX'):
+                # Flatten into tmpdir (ignore subdirectory structure)
+                basename = os.path.basename(name)
+                if not basename:
+                    continue
+                fp = os.path.join(tmpdir, basename)
+                with zf.open(name) as src, open(fp, 'wb') as dst:
+                    dst.write(src.read())
+                paths.append(fp)
     return sorted(paths), tmpdir
 
 
@@ -281,11 +310,16 @@ def render_pdf(html_content, pdf_path):
 # ── Run analysis ─────────────────────────────────────────────────────────────
 
 if run_button and has_input:
-    # Get file paths — either from uploads or folder path
+    # Get file paths — from ZIP, uploads, or folder path
     if folder_path and os.path.isdir(folder_path):
         from rayleigh_fingerprint import collect_sor_files as _collect
         filepaths = _collect([folder_path])
         st.toast(f"Found {len(filepaths)} SOR files")
+    elif uploaded_zip:
+        progress_bar = st.progress(0, text="Extracting ZIP...")
+        filepaths, tmpdir = stage_zip(uploaded_zip)
+        progress_bar.progress(1.0, text=f"Extracted {len(filepaths)} SOR files from ZIP")
+        progress_bar.empty()
     else:
         # Stage uploaded files with progress bar
         progress_bar = st.progress(0, text="Staging uploaded files...")
