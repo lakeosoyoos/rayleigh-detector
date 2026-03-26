@@ -1,3 +1,7 @@
+[server]
+maxUploadSize = 1000
+enableXsrfProtection = false
+
 [theme]
 base = "dark"
 primaryColor = "#4BA82E"
