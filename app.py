@@ -33,7 +33,7 @@ from rayleighcourse_dashboard import build_dashboard, _find_event_meta, generate
 # ── Page config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="ZERO dB — Rayleigh Duplicate Detector",
+    page_title="Rayleigh Duplicate Detector",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -220,24 +220,35 @@ def detect_resolution(filepaths):
 
 
 def render_pdf(html_content, pdf_path):
-    """Render HTML to PDF using Chrome headless. Return True on success."""
+    """Render HTML to PDF. Try Chrome first, fall back to WeasyPrint."""
+    # Try Chrome headless first (best quality)
     chrome = _find_chrome()
-    if not chrome:
-        return False
-    tmpdir = tempfile.mkdtemp(prefix="rayleigh_pdf_")
-    html_path = os.path.join(tmpdir, "report.html")
-    with open(html_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
+    if chrome:
+        tmpdir = tempfile.mkdtemp(prefix="rayleigh_pdf_")
+        html_path = os.path.join(tmpdir, "report.html")
+        with open(html_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        try:
+            result = subprocess.run(
+                [chrome, '--headless=new', '--disable-gpu', '--no-sandbox',
+                 '--run-all-compositor-stages-before-draw',
+                 '--virtual-time-budget=5000',
+                 f'--print-to-pdf={os.path.abspath(pdf_path)}',
+                 '--print-to-pdf-no-header', '--no-pdf-header-footer',
+                 'file://' + os.path.abspath(html_path)],
+                capture_output=True, timeout=120)
+            if result.returncode == 0 and os.path.exists(pdf_path):
+                return True
+        except Exception:
+            pass
+
+    # Fall back to WeasyPrint (works on servers without Chrome)
     try:
-        result = subprocess.run(
-            [chrome, '--headless=new', '--disable-gpu', '--no-sandbox',
-             '--run-all-compositor-stages-before-draw',
-             '--virtual-time-budget=5000',
-             f'--print-to-pdf={os.path.abspath(pdf_path)}',
-             '--print-to-pdf-no-header', '--no-pdf-header-footer',
-             'file://' + os.path.abspath(html_path)],
-            capture_output=True, timeout=120)
-        return result.returncode == 0 and os.path.exists(pdf_path)
+        from weasyprint import HTML
+        HTML(string=html_content).write_pdf(pdf_path)
+        return os.path.exists(pdf_path)
+    except ImportError:
+        return False
     except Exception:
         return False
 
