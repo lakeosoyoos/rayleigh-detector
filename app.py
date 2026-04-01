@@ -39,75 +39,340 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ZERO dB brand green: #4BA82E (primary), #8CC63F (light)
 st.markdown("""
 <style>
-    /* Primary buttons */
-    .stButton > button[kind="primary"],
-    .stDownloadButton > button[kind="primary"] {
-        background-color: #4BA82E !important;
-        border-color: #4BA82E !important;
-        color: white !important;
-    }
-    .stButton > button[kind="primary"]:hover,
-    .stDownloadButton > button[kind="primary"]:hover {
-        background-color: #3D8C24 !important;
-        border-color: #3D8C24 !important;
-    }
-    /* Secondary buttons */
-    .stButton > button,
-    .stDownloadButton > button {
-        border-color: #4BA82E !important;
-        color: #4BA82E !important;
-    }
-    .stButton > button:hover,
-    .stDownloadButton > button:hover {
-        border-color: #3D8C24 !important;
-        color: #3D8C24 !important;
-    }
-    /* Progress bar */
-    .stProgress > div > div > div > div {
-        background-color: #4BA82E !important;
-    }
-    /* Radio buttons - selected state green */
-    .stRadio [role="radiogroup"] label[data-checked="true"],
-    .stRadio [role="radiogroup"] label:has(input:checked) {
-        background-color: #4BA82E !important;
-        border-color: #4BA82E !important;
-        color: white !important;
-    }
-    .stRadio [role="radiogroup"] label[data-checked="true"] p,
-    .stRadio [role="radiogroup"] label:has(input:checked) p {
-        color: white !important;
-    }
-    /* Radio pill borders */
-    .stRadio [role="radiogroup"] label {
-        border-color: #4BA82E !important;
-    }
-    .stRadio [role="radiogroup"] label:hover {
-        border-color: #3D8C24 !important;
-    }
-    /* Checkbox accents */
-    .stCheckbox > label > span {
-        color: #2c2c2a;
-    }
-    /* Sidebar - keep all text white */
-    [data-testid="stSidebar"] h2,
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] .stMarkdown,
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
-        color: white !important;
-    }
-    /* Links */
-    a { color: #4BA82E !important; }
-    a:hover { color: #3D8C24 !important; }
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ── Reset & base ────────────────────────────────────────────── */
+#MainMenu       { visibility: hidden; }
+footer          { visibility: hidden; }
+header          { visibility: hidden; }
+.stDeployButton { display: none; }
+
+html, body, [class*="css"], .stMarkdown, p, label, span, div {
+    font-family: 'Nunito', 'Segoe UI', Arial, sans-serif !important;
+}
+.main .block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* ── Top utility strip ───────────────────────────────────────── */
+.tc-topbar {
+    background: #1C2526;
+    color: #cccccc;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    padding: 7px 36px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 28px;
+    letter-spacing: 0.4px;
+}
+.tc-topbar span { color: #aaaaaa; cursor: default; }
+
+/* ── Main nav bar ────────────────────────────────────────────── */
+.tc-navbar {
+    background: #ffffff;
+    border-bottom: 2px solid #eeeeee;
+    padding: 16px 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.tc-logo-icon {
+    font-size: 30px;
+    font-weight: 900;
+    color: #E8461E;
+    line-height: 1;
+    font-family: 'Nunito', sans-serif;
+    transform: skewX(-8deg);
+    display: inline-block;
+}
+.tc-logo-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1a1a1a !important;
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: -0.3px;
+}
+.tc-navbar-spacer { flex: 1; }
+.tc-contact-btn {
+    border: 2px solid #E8461E;
+    color: #1a1a1a;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 8px 18px;
+    position: relative;
+    cursor: default;
+    letter-spacing: 0.2px;
+}
+.tc-contact-btn::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #E8461E;
+}
+
+/* ── Hero banner ─────────────────────────────────────────────── */
+.tc-hero {
+    background: linear-gradient(105deg, #E8461E 55%, #c23610 100%);
+    padding: 42px 36px 38px 36px;
+    margin-bottom: 32px;
+}
+.tc-hero h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 34px;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    line-height: 1.15;
+    letter-spacing: -0.3px;
+}
+.tc-hero p {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: rgba(255,255,255,0.88);
+    margin: 0;
+    font-weight: 600;
+}
+
+/* ── Cards ───────────────────────────────────────────────────── */
+.tc-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-top: 4px solid #E8461E;
+    border-radius: 4px;
+    padding: 24px 26px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.tc-card-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0 0 14px 0;
+    letter-spacing: -0.1px;
+}
+
+/* ── Checklist ───────────────────────────────────────────────── */
+.tc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.tc-list li {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    padding: 5px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+}
+.tc-list li::before {
+    content: "▸";
+    color: #E8461E;
+    font-weight: 900;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ── Stat tiles ──────────────────────────────────────────────── */
+.tc-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 28px 0;
+}
+.tc-stat {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-top: 4px solid #E8461E;
+    border-radius: 4px;
+    padding: 16px 20px;
+    min-width: 140px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.tc-stat-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+.tc-stat-value {
+    font-family: 'Nunito', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: #1a1a1a;
+    line-height: 1;
+}
+.tc-stat-sub {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #777;
+    margin-top: 3px;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: #1C2526 !important;
+    border-right: 3px solid #E8461E !important;
+    width: 620px !important;
+    min-width: 620px !important;
+    max-width: 620px !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 0.5rem;
+    width: 620px !important;
+}
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"],
+button[data-testid="stBaseButton-headerNoPadding"],
+[data-testid="stSidebar"] button[title="Collapse sidebar"],
+[data-testid="stSidebar"] button[aria-label="Collapse sidebar"] {
+    display: none !important;
+}
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] .stMarkdown,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+    font-family: 'Nunito', sans-serif !important;
+    color: #e8e8e8 !important;
+}
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    text-align: center !important;
+}
+[data-testid="stSidebar"] .stTextInput input,
+[data-testid="stSidebar"] .stNumberInput input {
+    background: #243030 !important;
+    border-color: #E8461E !important;
+    color: #e8e8e8 !important;
+    font-family: 'Nunito', sans-serif !important;
+}
+[data-testid="stSidebar"] hr {
+    border-color: #2e3d3d !important;
+}
+[data-testid="stSidebar"] .stCaption,
+[data-testid="stSidebar"] small {
+    color: #aaa !important;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.stButton > button[kind="primary"],
+.stDownloadButton > button[kind="primary"] {
+    background-color: #E8461E !important;
+    border-color: #E8461E !important;
+    color: white !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 800 !important;
+    border-radius: 3px !important;
+    letter-spacing: 0.3px;
+}
+.stButton > button[kind="primary"]:hover,
+.stDownloadButton > button[kind="primary"]:hover {
+    background-color: #c23610 !important;
+    border-color: #c23610 !important;
+}
+.stButton > button,
+.stDownloadButton > button {
+    border-color: #E8461E !important;
+    color: #E8461E !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 800 !important;
+    border-radius: 3px !important;
+}
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    border-color: #c23610 !important;
+    color: #c23610 !important;
+}
+
+/* ── Progress bar ────────────────────────────────────────────── */
+.stProgress > div > div > div > div {
+    background-color: #E8461E !important;
+}
+
+/* ── Radio ───────────────────────────────────────────────────── */
+.stRadio [role="radiogroup"] label {
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 700 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+.stRadio [role="radiogroup"] label[data-checked="true"],
+.stRadio [role="radiogroup"] label:has(input:checked) {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: inherit !important;
+}
+:root { --primary-color: #E8461E !important; }
+[data-baseweb="radio"] [role="radio"][aria-checked="true"] div {
+    background-color: #E8461E !important;
+    border-color: #E8461E !important;
+}
+[data-baseweb="radio"] [role="radio"] div {
+    border-color: #E8461E !important;
+}
+
+/* ── Links ───────────────────────────────────────────────────── */
+a { color: #E8461E !important; }
+
+/* ── Expander ────────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 4px !important;
+    background: #ffffff !important;
+}
+[data-testid="stExpander"] summary {
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 800 !important;
+    color: #1a1a1a !important;
+    background: #ffffff !important;
+}
+[data-testid="stExpander"] summary:hover { color: #E8461E !important; }
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary span,
+[data-testid="stExpander"] summary * {
+    color: #1a1a1a !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-weight: 800 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-st.title("Rayleigh Duplicate Detector")
-st.caption("OTDR trace duplicate detection using Rayleigh backscatter fingerprinting")
+st.markdown("""
+<div class="tc-topbar">
+    <span>OTDR QC Tools</span>
+    <span>Help</span>
+</div>
+<div class="tc-navbar">
+    <div class="tc-logo-icon">↗</div>
+    <a href="/" target="_self" class="tc-logo-name" style="text-decoration:none; cursor:pointer;">Rayleigh Duplicate Detector</a>
+    <div class="tc-navbar-spacer"></div>
+    <div class="tc-contact-btn">OTDR QC &nbsp; ▸</div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ── Password protection ──────────────────────────────────────────────────────
@@ -563,12 +828,15 @@ if run_button and has_input:
 
 if st.session_state.get("analysis_done"):
 
-    # Summary
-    st.subheader("Analysis Complete")
+    st.markdown("""
+    <div class="tc-hero">
+        <h1>Analysis Complete</h1>
+        <p>Rayleigh backscatter fingerprinting - duplicate trace detection</p>
+    </div>
+    """, unsafe_allow_html=True)
     if st.session_state.summary:
         st.markdown(st.session_state.summary)
-
-    st.divider()
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # Download buttons
     col1, col2 = st.columns(2)
@@ -602,16 +870,52 @@ if st.session_state.get("analysis_done"):
         st.code(st.session_state.log_output or "No log output.", language=None)
 
 else:
-    # No results yet — show instructions
-    st.info("Upload SOR files in the sidebar and click **Run Analysis** to start.")
     st.markdown("""
-    **How it works:**
-    1. **Upload** your .sor trace files (drag and drop multiple files)
-    2. The app **auto-detects** whether traces are fine or coarse resolution
-    3. Click **Run Analysis** to find duplicate traces
-    4. **Download** the PDF report — same format as our command-line exports
+    <div class="tc-hero">
+        <h1>Rayleigh Duplicate<br>Detector</h1>
+        <p>OTDR trace duplicate detection using Rayleigh backscatter fingerprinting</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    **Analysis modes:**
-    - **Fine resolution** — Uses Rayleigh backscatter fingerprinting between events
-    - **Coarse resolution** — Multi-metric voting across 7 shape signatures
-    """)
+    st.markdown("""
+    <div style="display:flex; gap:18px; align-items:stretch; margin-bottom:18px;">
+        <div class="tc-card" style="flex:1; margin-bottom:0;">
+            <div class="tc-card-title">Fine Resolution - Rayleigh Fingerprint</div>
+            <ul class="tc-list">
+                <li>Compares Rayleigh backscatter segments between fiber pairs</li>
+                <li>Tier 1 - exact duplicates below tight RMSE threshold</li>
+                <li>Tier 2 - probable duplicates below looser threshold</li>
+                <li>Best for trimmed, high-resolution OTDR traces</li>
+            </ul>
+        </div>
+        <div class="tc-card" style="flex:1; margin-bottom:0;">
+            <div class="tc-card-title">Coarse Resolution - Multi-Metric Voting</div>
+            <ul class="tc-list">
+                <li>Votes across 7 shape metrics per fiber pair</li>
+                <li>Catches duplicates when Rayleigh segments are too short</li>
+                <li>Auto-mode selects fine or coarse based on trace resolution</li>
+                <li>Best for untrimmed or short-segment traces</li>
+            </ul>
+        </div>
+    </div>
+    <div style="display:flex; gap:18px; align-items:stretch; margin-bottom:18px;">
+        <div class="tc-card" style="flex:1; margin-bottom:0;">
+            <div class="tc-card-title">How To Use</div>
+            <ul class="tc-list">
+                <li>Upload SOR files as a ZIP or browse individual files</li>
+                <li>Select Auto-detect mode or choose Fine/Coarse manually</li>
+                <li>Enter a route name (optional) for the report filename</li>
+                <li>Click <strong>Run Analysis</strong> to download the PDF report</li>
+            </ul>
+        </div>
+        <div class="tc-card" style="flex:1; margin-bottom:0;">
+            <div class="tc-card-title">Output</div>
+            <ul class="tc-list">
+                <li>PDF report with RMSE distribution chart and flagged pairs</li>
+                <li>HTML report for browser viewing</li>
+                <li>Tier 1 (exact) and Tier 2 (probable) duplicate classifications</li>
+                <li>Advanced settings available for threshold tuning</li>
+            </ul>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
